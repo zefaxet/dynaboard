@@ -1,0 +1,6 @@
+﻿  Building 'osrusbfx2' with toolset 'WindowsApplicationForDrivers10.0' and the 'Universal' target platform.
+  dump.c
+  testapp.c
+  Generating Code...
+  osrusbfx2.vcxproj -> C:\Users\Fenway\source\repos\Windows-driver-samples\usb\umdf2_fx2\exe\Debug\osrusbfx2.exe
+  Driver is a Universal Driver.
