@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "osrusbfx2um", "driver\osrus
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "osrusbfx2", "exe\osrusbfx2.vcxproj", "{6EED5CDD-5526-40DC-97F9-582857E10187}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConfigApp", "ConfigApp\ConfigApp.vcxproj", "{F48B55F1-358E-470B-87EF-F756C23D4787}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -35,6 +37,14 @@ Global
 		{6EED5CDD-5526-40DC-97F9-582857E10187}.Release|Win32.Build.0 = Release|Win32
 		{6EED5CDD-5526-40DC-97F9-582857E10187}.Release|x64.ActiveCfg = Release|x64
 		{6EED5CDD-5526-40DC-97F9-582857E10187}.Release|x64.Build.0 = Release|x64
+		{F48B55F1-358E-470B-87EF-F756C23D4787}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F48B55F1-358E-470B-87EF-F756C23D4787}.Debug|Win32.Build.0 = Debug|Win32
+		{F48B55F1-358E-470B-87EF-F756C23D4787}.Debug|x64.ActiveCfg = Debug|x64
+		{F48B55F1-358E-470B-87EF-F756C23D4787}.Debug|x64.Build.0 = Debug|x64
+		{F48B55F1-358E-470B-87EF-F756C23D4787}.Release|Win32.ActiveCfg = Release|Win32
+		{F48B55F1-358E-470B-87EF-F756C23D4787}.Release|Win32.Build.0 = Release|Win32
+		{F48B55F1-358E-470B-87EF-F756C23D4787}.Release|x64.ActiveCfg = Release|x64
+		{F48B55F1-358E-470B-87EF-F756C23D4787}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
