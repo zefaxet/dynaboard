@@ -21,7 +21,6 @@ class Key(object):
 		self._canvas = ImageDraw.Draw(self._image)
 
 		try:
-#		self._font = ImageFont.load_default()
 			self._font = ImageFont.truetype('FreeMono.ttf', 14)
 		except IOError:
 			self._font = ImageFont.load_default()
