@@ -20,9 +20,10 @@ class Key(object):
 		self._image = Image.new('1', (display.width, display.height))
 		self._canvas = ImageDraw.Draw(self._image)
 
-#		self._font = ImageFont.load_default()
-		self._font = ImageFont.truetype('FreeMono.ttf', 14)
-
+		try:
+			self._font = ImageFont.truetype('FreeMono.ttf', 14)
+		except IOError:
+			self._font = ImageFont.load_default()
 	@property
 	def display(self):
 		return 'nunya'
