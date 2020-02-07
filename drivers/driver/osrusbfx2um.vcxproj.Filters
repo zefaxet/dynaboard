@@ -19,19 +19,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="bulkrwr.c">
+    <ClCompile Include="driver.c; device.c; ioctl.c; bulkrwr.c; Interrupt.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="device.c">
+    <ClCompile Include="driver.c; device.c; ioctl.c; bulkrwr.c; Interrupt.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="driver.c">
+    <ClCompile Include="driver.c; device.c; ioctl.c; bulkrwr.c; Interrupt.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Interrupt.c">
+    <ClCompile Include="driver.c; device.c; ioctl.c; bulkrwr.c; Interrupt.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ioctl.c">
+    <ClCompile Include="driver.c; device.c; ioctl.c; bulkrwr.c; Interrupt.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -39,5 +39,18 @@
     <MessageCompile Include="osrusbfx2.man">
       <Filter>Resource Files</Filter>
     </MessageCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="*.h;*.hpp;*.hxx;*.hm;*.inl;*.xsd">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="*.h;*.hpp;*.hxx;*.hm;*.inl;*.xsd">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Inf Include="osrusbfx2um.inx">
+      <Filter>Driver Files</Filter>
+    </Inf>
   </ItemGroup>
 </Project>
