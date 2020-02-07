@@ -75,6 +75,7 @@ BEGIN_MESSAGE_MAP(CMFCTestDlg, CDialogEx)
 	ON_BN_CLICKED(send_button, &CMFCTestDlg::OnBnClickedbutton)
 	ON_BN_CLICKED(recv_button, &CMFCTestDlg::OnBnClickedRecv)
 	ON_EN_CHANGE(IDC_EDIT1, &CMFCTestDlg::OnEnChangeEdit1)
+	ON_BN_CLICKED(IDOK, &CMFCTestDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
@@ -234,4 +235,26 @@ void CMFCTestDlg::OnEnChangeEdit1()
 	// with the ENM_CHANGE flag ORed into the mask.
 
 	// TODO:  Add your control notification handler code here
+}
+
+
+void CMFCTestDlg::OnBnClickedOk()
+{
+	HANDLE hComm = CreateFile(L"COM3", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, 0);
+	CString string;
+	GetDlgItemText(IDC_EDIT1, string);
+
+	const CString command = L"./setchar.sh ";
+	CString execute = command + string + L"\n";
+	int t = execute.GetLength();
+	DWORD written;
+	if (WriteFile(hComm, execute, execute.GetLength() * 2 - 1, &written, NULL))
+	{
+		MessageBoxW(L"Successfully communicated configuration to Pi");
+	}
+	else
+	{
+		MessageBoxW(L"Failed to write to serial port given for the Pi.");
+	}
+	CloseHandle(hComm);
 }
