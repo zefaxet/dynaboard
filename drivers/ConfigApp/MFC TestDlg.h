@@ -37,4 +37,5 @@ public:
 	afx_msg void OnBnClickedbutton();
 	afx_msg void OnBnClickedRecv();
 	afx_msg void OnEnChangeEdit1();
+	afx_msg void OnBnClickedOk();
 };

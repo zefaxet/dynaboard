@@ -1,0 +1,1 @@
+echo -c Setting character on screen to $1 > what_it_do
