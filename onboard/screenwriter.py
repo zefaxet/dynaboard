@@ -1,4 +1,5 @@
 import Adafruit_SSD1306
+import sys
 
 from PIL import Image
 from PIL import ImageDraw
@@ -26,7 +27,7 @@ class Key(object):
 			self._font = ImageFont.load_default()
 	@property
 	def display(self):
-		return 'nunya'
+		return 'wowza'
 
 	# sets the string that will be displayed on the module
 	# for our uses, this will probably be just a single character string
@@ -39,6 +40,8 @@ class Key(object):
 
 key = Key()
 
-while True:
-
-	key.display = raw_input('What to display? ')
+try:
+	key.display = sys.argv[1][0]
+except Exception as e:
+	key.display = ''
+	raise e
