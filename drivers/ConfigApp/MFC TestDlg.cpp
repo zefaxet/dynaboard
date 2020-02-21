@@ -1,4 +1,4 @@
-
+﻿
 // MFC TestDlg.cpp : implementation file
 //
 
@@ -11,6 +11,7 @@
 #include "winioctl.h"
 
 #include <sstream>
+#include <vector>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -59,6 +60,8 @@ END_MESSAGE_MAP()
 
 CMFCTestDlg::CMFCTestDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MFCTEST_DIALOG, pParent)
+	, selected_character(_T(""))
+	, character_set(_T(""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -66,18 +69,18 @@ CMFCTestDlg::CMFCTestDlg(CWnd* pParent /*=nullptr*/)
 void CMFCTestDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, CHARACTER_LIST, characters);
+	DDX_LBString(pDX, CHARACTER_LIST, selected_character);
+	DDX_Control(pDX, CHARACTER_SET_LIST, character_sets);
+	DDX_CBString(pDX, CHARACTER_SET_LIST, character_set);
 }
 
 BEGIN_MESSAGE_MAP(CMFCTestDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(open_button, &OnBnClickedButton1)
-	ON_BN_CLICKED(IDC_BUTTON2, &OnBnClickedButton2)
-	ON_BN_CLICKED(send_button, &CMFCTestDlg::OnBnClickedbutton)
-	ON_BN_CLICKED(recv_button, &CMFCTestDlg::OnBnClickedRecv)
-	ON_EN_CHANGE(IDC_EDIT1, &CMFCTestDlg::OnEnChangeEdit1)
 	ON_BN_CLICKED(IDOK, &CMFCTestDlg::OnBnClickedOk)
+	ON_LBN_SELCHANGE(CHARACTER_SET_LIST, &CMFCTestDlg::OnLbnSelchangeSetList)
 END_MESSAGE_MAP()
 
 
@@ -123,7 +126,7 @@ BOOL CMFCTestDlg::OnInitDialog()
 		goto error;
 	}
 
-	BYTE data[2];
+	BYTE data[4];
 	DWORD type, ndata;
 	status = RegQueryValueEx(unicode_key, L"EnableHexNumpad", NULL, &type, data, &ndata);
 	if (status == ERROR_FILE_NOT_FOUND || status == ERROR_SUCCESS_REBOOT_REQUIRED || data[0] != '1')
@@ -158,12 +161,19 @@ BOOL CMFCTestDlg::OnInitDialog()
 		MessageBox(L"Please run the application as an administrator.", L"Error");
 		goto exit;
 	}
-	else
+	else if (status != ERROR_SUCCESS)
 	{
 		errormsg = "An unknown error has occurred.";
 		goto error;
 	}
 	RegCloseKey(unicode_key);
+
+	character_sets.AddString(L"English Alphabet");
+	//character_sets.AddString(L"Russian Alphabet");
+	//character_sets.AddString(L"Arabic Abjad");
+	character_sets.SetCurSel(0);
+	character_set = L"English Alphabet";
+	OnLbnSelchangeSetList();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 
@@ -291,28 +301,33 @@ void CMFCTestDlg::OnBnClickedRecv()
 }
 
 
-void CMFCTestDlg::OnEnChangeEdit1()
-{
-	// TODO:  If this is a RICHEDIT control, the control will not
-	// send this notification unless you override the CDialogEx::OnInitDialog()
-	// function and call CRichEditCtrl().SetEventMask()
-	// with the ENM_CHANGE flag ORed into the mask.
-
-	// TODO:  Add your control notification handler code here
-}
-
-
 void CMFCTestDlg::OnBnClickedOk()
 {
-	HANDLE hComm = CreateFile(L"COM3", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, 0);
-	CString string;
-	GetDlgItemText(IDC_EDIT1, string);
+	std::wstringstream comfile;
+	comfile << "COM";
+	int status = false;
+	int com_port = GetDlgItemInt(COM_FIELD, &status, 0);
+	if (!status)
+	{
+	invalid_com:
+		MessageBox(L"Please enter a valid COM port number");
+		return;
+	}
+	comfile << com_port;
 
-	const CString command = L"./setchar.sh ";
-	CString execute = command + string + L"\n";
-	int t = execute.GetLength();
+	characters.GetLBText(characters.GetCurSel(), selected_character);
+
+	HANDLE hComm = CreateFile(comfile.str().c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, 0);
+	if (GetLastError() == ERROR_FILE_NOT_FOUND)
+		goto invalid_com;
+
+	unsigned char Header[2] = { 0xFE, 0xFE };
 	DWORD written;
-	if (WriteFile(hComm, execute, execute.GetLength() * 2 - 1, &written, NULL))
+	const wchar_t t = L'ж';
+	//WriteFile(hComm, Header, 2, &written, NULL);
+	const CString command = L"./setchar.sh ";
+	CString execute = command + selected_character + L"\n";
+	if (WriteFile(hComm, (LPCTSTR)execute, execute.GetLength() * 2 + 2, &written, NULL))
 	{
 		MessageBoxW(L"Successfully communicated configuration to Pi");
 	}
@@ -321,4 +336,70 @@ void CMFCTestDlg::OnBnClickedOk()
 		MessageBoxW(L"Failed to write to serial port given for the Pi.");
 	}
 	CloseHandle(hComm);
+}
+
+const std::vector<wchar_t *> English = {
+	L"A", L"B", L"C", L"D",
+	L"E", L"F", L"G", L"H",
+	L"I", L"J", L"K", L"L",
+	L"M", L"N", L"O", L"P",
+	L"Q", L"R", L"S", L"T",
+	L"U", L"V", L"W", L"X",
+	L"Y", L"Z"
+};
+
+const std::vector<wchar_t *> Russian = {
+	L"А", L"Б", L"В", L"Г",
+	L"Д", L"Е", L"Ё", L"Ж",
+	L"З", L"И", L"Й", L"К",
+	L"Л", L"М", L"Н", L"О",
+	L"П", L"Р", L"С", L"Т",
+	L"У", L"Ф", L"Х", L"Ц",
+	L"Ч", L"Ш", L"Щ", L"Ъ",
+	L"Ы", L"Ь", L"Э", L"Ю",
+	L"Я"
+};
+
+const std::vector<CString> Arabic = {
+	L"ي", L"و", L"ه", L"ن",
+	L"م", L"ل", L"ك", L"ق",
+	L"ف", L"غ", L"ع", L"ظ",
+	L"ط", L"ض", L"ص", L"ش",
+	L"س", L"ز", L"ر", L"ذ",
+	L"د", L"خ", L"ح", L"ج",
+	L"ث", L"ت", L"ب", L"ا"
+};
+
+// Character set list
+void CMFCTestDlg::OnLbnSelchangeSetList()
+{
+	character_sets.GetLBText(character_sets.GetCurSel(), character_set);
+	characters.ResetContent();
+	std::vector<wchar_t *> alphabet;
+
+	if (character_set == "English Alphabet")
+	{
+		alphabet = English;
+	}
+	else if (character_set == "Russian Alphabet")
+	{
+		alphabet = Russian;
+	}
+	else if (character_set == "Arabic Abjad")
+	{
+		//alphabet = Arabic;
+	}
+	else
+	{
+		MessageBox(L"An error has occurred.", L"Error");
+		character_set = "English Alphabet";
+		OnLbnSelchangeSetList();
+		return;
+	}
+
+	for each (wchar_t * letter in alphabet)
+	{
+		characters.AddString(letter);
+	}
+	characters.SetCurSel(0);
 }

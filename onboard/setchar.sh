@@ -1,2 +1,1 @@
-echo -n $1 > char_store
-python screenwriter.py $1
+echo -c Setting character on screen to $1 > what_it_do

@@ -36,6 +36,10 @@ protected:
 public:
 	afx_msg void OnBnClickedbutton();
 	afx_msg void OnBnClickedRecv();
-	afx_msg void OnEnChangeEdit1();
 	afx_msg void OnBnClickedOk();
+	afx_msg void OnLbnSelchangeSetList();
+	CString selected_character;
+	CComboBox characters;
+	CComboBox character_sets;
+	CString character_set;
 };
