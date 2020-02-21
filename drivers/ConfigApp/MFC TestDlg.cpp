@@ -10,6 +10,8 @@
 
 #include "winioctl.h"
 
+#include <sstream>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -112,7 +114,69 @@ BOOL CMFCTestDlg::OnInitDialog()
 
 	// TODO: Add extra initialization here
 
+	CString errormsg;
+	HKEY unicode_key;
+	LSTATUS status = RegOpenKeyEx(HKEY_CURRENT_USER, L"Control Panel\\Input Method", 0, KEY_QUERY_VALUE, &unicode_key);
+	if (status != ERROR_SUCCESS)
+	{
+		errormsg = "Error occured when opening Input Method registry key.";
+		goto error;
+	}
+
+	BYTE data[2];
+	DWORD type, ndata;
+	status = RegQueryValueEx(unicode_key, L"EnableHexNumpad", NULL, &type, data, &ndata);
+	if (status == ERROR_FILE_NOT_FOUND || status == ERROR_SUCCESS_REBOOT_REQUIRED || data[0] != '1')
+	{
+		if (MessageBox(
+			L"Before running the configuration application for the first time, some system changes need to be made and a reboot will be required. Would you like to do this now?",
+			L"First Time Setup",
+			MB_YESNO) == IDNO) exit(1);
+		status = RegOpenKeyEx(unicode_key, L"", 0, KEY_SET_VALUE, &unicode_key);
+		if (status != ERROR_SUCCESS)
+		{
+			errormsg = "Error in opening registry key.";
+			goto error;
+		}
+		const BYTE data[2] = { '1', 0 };
+		status = RegSetValueEx(unicode_key, L"EnableHexNumpad", 0, REG_SZ, data, 2);
+		if (status != ERROR_SUCCESS)
+		{
+			errormsg = "Error in setting registry key value.";
+			goto error;
+		}
+		if (!ExitWindows(0x2, SHTDN_REASON_MINOR_RECONFIG))
+		{
+			errormsg = "Failed to initiate Windows shutdown.";
+			status = GetLastError();
+			goto error;
+		}
+		goto exit;
+	}
+	else if (status == ERROR_ACCESS_DENIED)
+	{
+		MessageBox(L"Please run the application as an administrator.", L"Error");
+		goto exit;
+	}
+	else
+	{
+		errormsg = "An unknown error has occurred.";
+		goto error;
+	}
+	RegCloseKey(unicode_key);
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
+
+exit:
+	if (unicode_key != 0)
+		RegCloseKey(unicode_key);
+	exit(status);
+
+error:
+	std::wstringstream stream;
+	stream << errormsg << std::endl << "Status Code: " << status;
+	MessageBox(stream.str().c_str(), L"Error");
+	goto exit;
 }
 
 void CMFCTestDlg::OnSysCommand(UINT nID, LPARAM lParam)
